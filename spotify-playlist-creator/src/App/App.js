@@ -3,61 +3,29 @@ import './App.css';
 import SearchResults from '../SearchResults/SearchResults';
 import SearchBar from '../SearchBar/SearchBar';
 import PlayList from '../PlayList/PlayList';
+import Spotify from '../util/Spotify';
 
 class App extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
+
     this.state = {
-      searchResults: [
-        {
-          name: 'name1',
-          artist: 'artist1',
-          album: 'album1',
-          id: 1
-        },
-        {
-          name: 'name2',
-          artist: 'artist2',
-          album: 'album2',
-          id: 2
-        },
-        {
-          name: 'name3',
-          artist: 'artist3',
-          album: 'album3',
-          id: 3
-        }
-      ],
+      searchResults: [],
+      playlistName: 'New Playlist',
+      playlistTracks: []
+    };
 
-      playlistName: 'Playlist Name',
-
-      playlistTracks: [
-        {
-          name: 'Track1',
-          artist: 'Artist1',
-          album: 'Album1',
-          id: 1
-        },
-        {
-          name: 'Track2',
-          artist: 'Artist2',
-          album: 'Album2',
-          id: 2
-        },
-        {
-          name: 'Track3',
-          artist: 'Artist3',
-          album: 'Album3',
-          id: 3
-        }
-      ]
-    }
-
+    this.search = this.search.bind(this);
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
     this.updatePlaylistName = this.updatePlaylistName.bind(this);
     this.savePlaylist = this.savePlaylist.bind(this);
-    this.search = this.search.bind(this);
+  }
+
+  search(term) {
+    Spotify.search(term).then(searchResults => {
+      this.setState({searchResults: searchResults});
+    });
   }
 
   addTrack(track) {
@@ -77,38 +45,37 @@ class App extends React.Component {
     this.setState({playlistTracks: tracks});
   }
 
-  updatePlaylistName(name){
+  updatePlaylistName(name) {
     this.setState({playlistName: name});
   }
 
-  savePlaylist(){
+  savePlaylist() {
     const trackUris = this.state.playlistTracks.map(track => track.uri);
-  }
-
-  search (term){
-    console.log(term);
+    Spotify.savePlaylist(this.state.playlistName, trackUris).then(() => {
+      this.setState({
+        playlistName: 'New Playlist',
+        playlistTracks: []
+      });
+    });
   }
 
   render() {
     return (
       <div>
-      <h1>Ja<span className="highlight">mmm</span>ing</h1>
-      <div className="App">
-        <SearchBar onSearch={this.search}/>
-        <div className="App-playlist">
-          <SearchResults searchResults={this.state.searchResults} 
-          onAdd={this.addTrack}
-          />
-
-          <PlayList playlistName={this.state.playlistName} 
-          playlistTracks={this.state.playlistTracks} 
-          onRemove={this.removeTrack} 
-          onNameChange={this.updatePlaylistName}
-          onSave={this.savePlaylist}
-          />
+        <h1>Ja<span className="highlight">mmm</span>ing</h1>
+        <div className="App">
+          <SearchBar onSearch={this.search} />
+          <div className="App-playlist">
+            <SearchResults searchResults={this.state.searchResults}
+                           onAdd={this.addTrack} />
+            <PlayList playlistName={this.state.playlistName}
+                      playlistTracks={this.state.playlistTracks}
+                      onNameChange={this.updatePlaylistName}
+                      onRemove={this.removeTrack}
+                      onSave={this.savePlaylist} />
+          </div>
         </div>
       </div>
-    </div>
     );
   }
 }
