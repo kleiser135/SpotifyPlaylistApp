@@ -1,5 +1,4 @@
-
-const clientId = 'ef57767e8cc54659bc4a583938d37bd9'; // Insert client ID here.
+const clientId = ''; // Insert client ID here.
 const redirectUri = 'http://localhost:3000/'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 let accessToken;
 
@@ -72,6 +71,23 @@ const Spotify = {
         });
       });
     });
+  },
+
+  getPlaylists(){
+    const accessToken = Spotify.getAccessToken();
+    const headers = {Authorization: `Bearer ${accessToken}`};
+    let userId
+
+    return fetch('https://api.spotify.com/v1/me/playlists', {headers: headers}
+    ).then(response => response.json()
+    ).then(jsonResponse => {
+      return jsonResponse.items.map(playlist => ({
+        name: playlist.name,
+        ownerId: playlist.owner.id,
+        ownerName: playlist.owner.display_name,
+        tracks: playlist.tracks.total
+      }))
+    })
   }
 };
 

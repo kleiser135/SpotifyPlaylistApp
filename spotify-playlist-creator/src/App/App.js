@@ -28,6 +28,10 @@ class App extends React.Component {
     });
   }
 
+  playlists(){
+    const allPlaylists = Spotify.getPlaylists();
+    console.log(allPlaylists);
+  }
   addTrack(track) {
     let tracks = this.state.playlistTracks;
     if (tracks.find(savedTrack => savedTrack.id === track.id)) {
@@ -62,7 +66,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1>Ja<span className="highlight">mmm</span>ing</h1>
+        <h1>Play<span className="highlight">lister</span></h1>
         <div className="App">
           <SearchBar onSearch={this.search} />
           <div className="App-playlist">
@@ -73,6 +77,7 @@ class App extends React.Component {
                       onNameChange={this.updatePlaylistName}
                       onRemove={this.removeTrack}
                       onSave={this.savePlaylist} />
+            <button onClick={this.playlists}>Click me nerd</button>
           </div>
         </div>
       </div>
